@@ -78,7 +78,7 @@ public class PortfolioAccessShareBatch implements  Database.Batchable <SObject> 
         }
         return getCustomerByUser;
     }
-    // Retrieves user IDs from the map to query AccessSharing in the database
+   // Retrieves cutomers IDs from the map to query AccessSharing in the database
     public set<Id> returnSetOfCustomers( map<Id,set<Id>> getCustomerByUser){
         set<Id> customersIds = new set<Id> ();
         for(set<Id> iCustomersIds : getCustomerByUser.values()) customersIds.addAll(iCustomersIds);

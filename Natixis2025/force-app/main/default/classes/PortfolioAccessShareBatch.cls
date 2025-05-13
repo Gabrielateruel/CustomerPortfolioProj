@@ -139,10 +139,10 @@ public class PortfolioAccessShareBatch implements  Database.Batchable <SObject> 
         
     }
     //Construct ContactShare Object 
-    public ContactShare setContactShareRecord(Id userId, Id accId){
+    public ContactShare setContactShareRecord(Id userId, Id conId){
         ContactShare newConShare = new ContactShare(
             ContactAccessLevel   = 'Read',
-            ContactId            = accId,
+            ContactId            = conId,
             UserOrGroupId        = userId
         );
         return newConShare;

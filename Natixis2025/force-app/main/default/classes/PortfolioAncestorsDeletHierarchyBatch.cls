@@ -14,7 +14,7 @@ public class PortfolioAncestorsDeletHierarchyBatch implements Database.Batchable
     }
     
     public void execute(Database.BatchableContext bc, List <Contact> scope) {
-        //Creates a set all Contacts to Compare with existing Portfolios
+        //gets a set all Contacts to retrieve with existing Portfolios
         if(scope.isEmpty()==false){
             set<Id> customersId = setCustomerIds(scope);
             List < CustomerPortfolio__c > allPortfolios = [SELECT Id, User__c, Contact__c, Source__c, CustomerPortfolio__c.User__r.UserRoleId,User__r.UserRole.ParentRoleId FROM CustomerPortfolio__c WHERE Contact__c IN: customersId];
@@ -45,7 +45,7 @@ public class PortfolioAncestorsDeletHierarchyBatch implements Database.Batchable
         allLowerRoleIds.removeAll(allParentRolesId);
         return allLowerRoleIds;
     }
-    // get all roles that in the bottom of the hierarchy
+    // get all portoflios with upper roles 
     public void getPortfoliosToDeleteInUpperHierarchy(List<CustomerPortfolio__c> allPortfolios, set<Id> customersId ){
         map<Id,set<Id>> existingConsWithRoles = new  map<Id,set<Id>>();
         map<Id,set<Id>> contactsToLowerRolesToNotDelete = new map<Id,set<Id>> ();

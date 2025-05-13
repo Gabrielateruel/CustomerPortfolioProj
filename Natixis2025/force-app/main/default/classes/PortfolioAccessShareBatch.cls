@@ -140,12 +140,12 @@ public class PortfolioAccessShareBatch implements  Database.Batchable <SObject> 
     }
     //Construct ContactShare Object 
     public ContactShare setContactShareRecord(Id userId, Id accId){
-        ContactShare newAccShare = new ContactShare(
+        ContactShare newConShare = new ContactShare(
             ContactAccessLevel   = 'Read',
             ContactId            = accId,
             UserOrGroupId        = userId
         );
-        return newAccShare;
+        return newConShare;
     }
     
     // Insert and delete all records and and handle Exceptions

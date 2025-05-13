@@ -60,19 +60,19 @@ public class PortfolioAncestorsDeletHierarchyBatch implements Database.Batchable
             }
         }
         
-        map<Id,set<Id>> parentRolesWithContactsToDelete = new map<Id,set<Id>> ();
+        map<Id,set<Id>> parentRolesWithContactsToNotDelete = new map<Id,set<Id>> ();
         //Creates a map with upper hierarchy from lower roles with the respective contacts that exisits on database, that will help to know which role above should be deleted to each contact.
         for(Id roleId : contactsToLowerRolesToNotDelete.keySet()){
             for(Id parentRole : roleToAncestors.get(roleId)){
-                if(!parentRolesWithContactsToDelete.containsKey(parentRole)) parentRolesWithContactsToDelete.put(parentRole,new set<Id>());
-                parentRolesWithContactsToDelete.get(parentRole).addAll(contactsToLowerRolesToNotDelete.get(roleId));
+                if(!parentRolesWithContactsToNotDelete.containsKey(parentRole)) parentRolesWithContactsToNotDelete.put(parentRole,new set<Id>());
+                parentRolesWithContactsToNotDelete.get(parentRole).addAll(contactsToLowerRolesToNotDelete.get(roleId));
             }
         }
         //Now compares what exists in the database with the upper hierarchy to determine what should be deleted.
         list<CustomerPortfolio__c> cpToDelete = new list<CustomerPortfolio__c>();
         for(CustomerPortfolio__c  iCustPort : allPortfolios){
             if(parentRolesId.contains(iCustPort.User__r.UserRoleId) && customersId.contains(iCustPort.Contact__c) && iCustPort.Source__c == 'Internal' ){
-                if(parentRolesWithContactsToDelete.get(iCustPort.User__r.UserRoleId).contains(iCustPort.Contact__c)==false){
+                if(parentRolesWithContactsToNotDelete.get(iCustPort.User__r.UserRoleId).contains(iCustPort.Contact__c)==false){
                     cpToDelete.add(iCustPort);
                 }
             }

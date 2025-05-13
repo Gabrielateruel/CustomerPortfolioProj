@@ -81,7 +81,7 @@ public class PortfolioAccessShareBatch implements  Database.Batchable <SObject> 
     // Retrieves user IDs from the map to query AccessSharing in the database
     public set<Id> returnSetOfCustomers( map<Id,set<Id>> getCustomerByUser){
         set<Id> customersIds = new set<Id> ();
-        for(set<Id> iCustomersIds : getCustomerByUser.values()) customersIds.addAll(customersIds);
+        for(set<Id> iCustomersIds : getCustomerByUser.values()) customersIds.addAll(iCustomersIds);
         return customersIds;
     }
     // Retrieves existing AccountShare records to prevent duplicate access sharing Exception 
@@ -96,7 +96,7 @@ public class PortfolioAccessShareBatch implements  Database.Batchable <SObject> 
     // Retrieves existing ContactShare records to prevent duplicate access sharing Exception 
     public map<Id,set<Id>> getExistingContactsSharingByUserAndCustomers(set<Id> targetContactIds, set<id> userTargetIds){
         map<Id,set<Id>> usersWithAccess = new map<Id,set<Id>>();
-        for(ContactShare iConShare : [SELECT UserOrGroupId FROM ContactShare WHERE ContactId IN :targetContactIds AND UserOrGroupId IN: userTargetIds]){
+        for(ContactShare iConShare : [SELECT UserOrGroupId,ContactId FROM ContactShare WHERE ContactId IN :targetContactIds AND UserOrGroupId IN: userTargetIds]){
             if(! usersWithAccess.containsKey(iConShare.UserOrGroupId))  usersWithAccess.put(iConShare.UserOrGroupId, new set<Id>{});
             usersWithAccess.get(iConShare.UserOrGroupId).add(iConShare.ContactId);
         }

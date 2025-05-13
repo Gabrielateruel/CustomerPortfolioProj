@@ -4,7 +4,7 @@ public class PortfolioAncestorsDeletHierarchyBatch implements Database.Batchable
     private Map<Id, Set<Id>> roleToAncestors = new Map<Id, Set<Id>>();
     
     public Database.QueryLocator start(Database.BatchableContext bc) {
-        //Build all role necessary roles hierarchy 
+        //Build all necessary roles hierarchy 
         List<UserRole> roleList = [SELECT Id, ParentRoleId FROM UserRole];
         parentRolesId           = getParentRoles(roleList);
         lowerRolesInHierarchy   = getLowerHierarchies(roleList,parentRolesId);

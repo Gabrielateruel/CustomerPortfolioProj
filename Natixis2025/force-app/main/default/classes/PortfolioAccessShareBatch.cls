@@ -1,6 +1,6 @@
 public class PortfolioAccessShareBatch implements  Database.Batchable <SObject> , Database.Stateful, Database.AllowsCallouts {
-    private list<AccountShare> newAccountShares = new List<AccountShare>();
-    private list<ContactShare> newContactShares = new List<ContactShare>();
+    private list<AccountShare> newAccountShares    = new List<AccountShare>();
+    private list<ContactShare> newContactShares    = new List<ContactShare>();
     private list<AccountShare> deleteAccountShares = new List<AccountShare>();
     private list<ContactShare> deleteContactShares = new List<ContactShare>();
     

@@ -45,7 +45,7 @@ public class PortfolioAncestorsDeletHierarchyBatch implements Database.Batchable
         allLowerRoleIds.removeAll(allParentRolesId);
         return allLowerRoleIds;
     }
-    // get all portoflios with upper roles 
+    // get all portoflios with upper roles to delete
     public void getPortfoliosToDeleteInUpperHierarchy(List<CustomerPortfolio__c> allPortfolios, set<Id> customersId ){
         map<Id,set<Id>> existingConsWithRoles = new  map<Id,set<Id>>();
         map<Id,set<Id>> contactsToLowerRolesToNotDelete = new map<Id,set<Id>> ();

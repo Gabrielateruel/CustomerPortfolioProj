@@ -108,7 +108,7 @@ public class PortfolioAccessShareBatch implements  Database.Batchable <SObject> 
         for(CustomerPortfolio__c iCustPort : triggerNew){
             if(iCustPort.isDeleted == false){
                 if(getExistingAccSharingByUser.containsKey(iCustPort.User__c)){
-                    if(!getExistingAccSharingByUser.containsKey(iCustPort.ParentContactAccountId__c))accShareToCreate.add(setAccShareRecord(iCustPort.User__c, iCustPort.ParentContactAccountId__c));
+                    if(!getExistingAccSharingByUser.get(iCustPort.User__c).contains(iCustPort.ParentContactAccountId__c))accShareToCreate.add(setAccShareRecord(iCustPort.User__c, iCustPort.ParentContactAccountId__c));
                 } else accShareToCreate.add(setAccShareRecord(iCustPort.User__c, iCustPort.ParentContactAccountId__c));
             }
         }
@@ -120,7 +120,7 @@ public class PortfolioAccessShareBatch implements  Database.Batchable <SObject> 
         for(CustomerPortfolio__c iCustPort : triggerNew){
             if(iCustPort.isDeleted == false){
                 if(getExistingContactSharingByUser.containsKey(iCustPort.User__c)){
-                    if(!getExistingContactSharingByUser.containsKey(iCustPort.Contact__c))contactShareToCreate.add(setContactShareRecord(iCustPort.User__c,iCustPort.Contact__c));
+                    if(!getExistingContactSharingByUser.get(iCustPort.User__c).contains(iCustPort.Contact__c))contactShareToCreate.add(setContactShareRecord(iCustPort.User__c,iCustPort.Contact__c));
                 } else contactShareToCreate.add(setContactShareRecord(iCustPort.User__c,iCustPort.Contact__c ));
             }
         }

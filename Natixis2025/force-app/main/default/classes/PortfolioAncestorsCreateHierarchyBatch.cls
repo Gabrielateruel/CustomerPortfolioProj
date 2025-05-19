@@ -7,7 +7,7 @@ public without sharing class PortfolioAncestorsCreateHierarchyBatch implements  
         allRoles         = new Map < Id, UserRole > ([SELECT Id, ParentRoleId FROM UserRole]);
         roleToAncestors  = getRoleHierarchyAncestors();
         DateTime fourHoursAgo = System.now().addHours(-4);
-        return Database.getQueryLocator([SELECT Id, User__c, UserRole__c, User__r.UserRole.ParentRoleId, ParentContactAccountId__c, Contact__c ,CustomerPortfolioKey__c,Favorite__c FROM CustomerPortfolio__c WHERE Source__c =: 'External' AND (CreatedDate >=: fourHoursAgo OR LastModifiedDate >=: fourHoursAgo) ]);
+        return Database.getQueryLocator([SELECT Id, User__c, UserRole__c, User__r.UserRole.ParentRoleId, ParentContactAccountId__c, Contact__c ,CustomerPortfolioKey__c,Favorite__c FROM CustomerPortfolio__c WHERE Source__c =: 'External'/* AND (CreatedDate >=: fourHoursAgo OR LastModifiedDate >=: fourHoursAgo)*/ ]);
     }
     
     //Creates a map with all roles with respective ancestors 
@@ -42,10 +42,10 @@ public without sharing class PortfolioAncestorsCreateHierarchyBatch implements  
             if (ancestorsIdToCreatePortfolios.isEmpty() == false && ancestorsIdToCreatePortfolios != null) {
                 for(Id roleId : ancestorsIdToCreatePortfolios){
                     CustomerPortofolioWrapper newPortfolio = new CustomerPortofolioWrapper(
-                                                            roleId,
-                                                            iCustPort.Contact__c,
-                                                            iCustPort.Favorite__c
-                                                            );
+                        roleId,
+                        iCustPort.Contact__c,
+                        iCustPort.Favorite__c
+                    );
                     custPortfoliosToCreate.add(newPortfolio);
                 }
                 //add roles of ancestors to query user infos later
@@ -59,7 +59,7 @@ public without sharing class PortfolioAncestorsCreateHierarchyBatch implements  
             setPortofoliosToCreate(custPortfoliosToCreate ,userRoleToUsersMap);
         }
     }
-
+    
     //create map with roles to get users on it
     public Map <Id,List<User>> getUsersFromRoles(set<Id> usersRolesToSearch) {
         
@@ -75,16 +75,19 @@ public without sharing class PortfolioAncestorsCreateHierarchyBatch implements  
     //execute logic to create portfolios
     public void setPortofoliosToCreate(list <CustomerPortofolioWrapper> listWrapper,Map<Id,List<User>> userRoleToUsersMap) {
         list<CustomerPortfolio__c> custPortToCreate       = new list<CustomerPortfolio__c>();
+        system.debug('listWrapper '+ listWrapper);
         for(CustomerPortofolioWrapper iCutPortToCopy : listWrapper){
-            for(User iUser : userRoleToUsersMap.get(iCutPortToCopy.roleId)){
-                custPortToCreate.add(setCustomerPortfolioRecord(iUser.Id, iCutPortToCopy.contactId));
+            if(userRoleToUsersMap.containsKey(iCutPortToCopy.roleId)){
+                for(User iUser : userRoleToUsersMap.get(iCutPortToCopy.roleId)){
+                    custPortToCreate.add(setCustomerPortfolioRecord(iUser.Id, iCutPortToCopy.contactId));
+                }
             }
         }
         if(custPortToCreate.isEmpty()==false) insertPortfolio(custPortToCreate);
     }
     
     public CustomerPortfolio__c setCustomerPortfolioRecord( Id userId, Id contactId){
-            CustomerPortfolio__c newCustPortfolio = new CustomerPortfolio__c(
+        CustomerPortfolio__c newCustPortfolio = new CustomerPortfolio__c(
             User__c    = userId,
             Contact__c = contactId,           
             Source__c  = 'Internal',
@@ -92,20 +95,19 @@ public without sharing class PortfolioAncestorsCreateHierarchyBatch implements  
         );
         return newCustPortfolio;
     }
-
+    
     public void insertPortfolio(list<CustomerPortfolio__c> custPortToCreate ){
-
-            Database.SaveResult[] insertPortfoliosResult = Database.insert(custPortToCreate, false);
-            for (Integer i = 0; i < insertPortfoliosResult.size(); i++) {
-                if (!insertPortfoliosResult[i].isSuccess()) {
-                    System.debug('Failed Contact Share Insertion: ' + insertPortfoliosResult[i].getErrors()[0].getMessage());
-                    System.debug('Send Email To Tech Lead with Failed and Save on Log Object');
-                }
+        
+        Database.SaveResult[] insertPortfoliosResult = Database.insert(custPortToCreate, false);
+        for (Integer i = 0; i < insertPortfoliosResult.size(); i++) {
+            if (!insertPortfoliosResult[i].isSuccess()) {
+                System.debug('Failed Contact Share Insertion: ' + insertPortfoliosResult[i].getErrors()[0].getMessage());
+                System.debug('Send Email To Tech Lead with Failed and Save on Log Object');
             }
+        }
     }
     
     public void finish(Database.BatchableContext bc) {
-        Database.executeBatch(new PortfolioAncestorsDeletHierarchyBatch(), 200);
+        Database.executeBatch(new CustomerPortfolioSecondaryBatch(), 200);
     }
-    
 }

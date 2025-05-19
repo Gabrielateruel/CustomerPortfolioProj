@@ -7,7 +7,7 @@ public without sharing class PortfolioAncestorsCreateHierarchyBatch implements  
         allRoles         = new Map < Id, UserRole > ([SELECT Id, ParentRoleId FROM UserRole]);
         roleToAncestors  = getRoleHierarchyAncestors();
         DateTime fourHoursAgo = System.now().addHours(-4);
-        return Database.getQueryLocator([SELECT Id, User__c, UserRole__c, User__r.UserRole.ParentRoleId, ParentContactAccountId__c, Contact__c ,CustomerPortfolioKey__c,Favorite__c FROM CustomerPortfolio__c WHERE Source__c =: 'External'/* AND (CreatedDate >=: fourHoursAgo OR LastModifiedDate >=: fourHoursAgo)*/ ]);
+        return Database.getQueryLocator([SELECT Id, User__c, UserRole__c, User__r.UserRole.ParentRoleId, ParentContactAccountId__c, Contact__c ,CustomerPortfolioKey__c,Favorite__c FROM CustomerPortfolio__c WHERE Source__c =: 'External' AND (CreatedDate >=: fourHoursAgo OR LastModifiedDate >=: fourHoursAgo) ]);
     }
     
     //Creates a map with all roles with respective ancestors 

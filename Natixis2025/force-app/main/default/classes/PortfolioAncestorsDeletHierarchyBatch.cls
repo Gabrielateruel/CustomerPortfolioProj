@@ -45,9 +45,25 @@ public class PortfolioAncestorsDeletHierarchyBatch implements Database.Batchable
         allLowerRoleIds.removeAll(allParentRolesId);
         return allLowerRoleIds;
     }
+
+    //Creates the map to get ancestors roles 
+    public Map<Id, Set<Id>> getAncestorHierarchy(list<UserRole> allRoleList) {
+        Map<Id, Set<Id>> roleToAncestors = new Map<Id, Set<Id>>();
+        Map<Id, Id> roleParentMap = new Map<Id, Id>();
+        for (UserRole role : allRoleList) roleParentMap.put(role.Id, role.ParentRoleId);
+        for (Id roleId : roleParentMap.keySet()) {
+            Set<Id> ancestors = new Set<Id>();
+            Id currentParentId = roleParentMap?.get(roleId);
+            while (currentParentId != null) {
+                ancestors.add(currentParentId);
+                currentParentId = roleParentMap?.get(currentParentId);
+            }
+            roleToAncestors.put(roleId, ancestors);
+        }
+        return roleToAncestors;
+    }
     // get all portoflios with upper roles to delete
     public void getPortfoliosToDeleteInUpperHierarchy(List<CustomerPortfolio__c> allPortfolios, set<Id> customersId ){
-        map<Id,set<Id>> existingConsWithRoles = new  map<Id,set<Id>>();
         map<Id,set<Id>> contactsToLowerRolesToNotDelete = new map<Id,set<Id>> ();
         
         for(CustomerPortfolio__c  iCustPort : allPortfolios){
@@ -80,23 +96,6 @@ public class PortfolioAncestorsDeletHierarchyBatch implements Database.Batchable
         if(cpToDelete.isEmpty()==false) finalDeletePortfolios(cpToDelete);
     }
     
-    //Creates the map to get ancestors roles 
-    public Map<Id, Set<Id>> getAncestorHierarchy(list<UserRole> allRoleList) {
-        Map<Id, Set<Id>> roleToAncestors = new Map<Id, Set<Id>>();
-        Map<Id, Id> roleParentMap = new Map<Id, Id>();
-        for (UserRole role : allRoleList) roleParentMap.put(role.Id, role.ParentRoleId);
-        for (Id roleId : roleParentMap.keySet()) {
-            Set<Id> ancestors = new Set<Id>();
-            Id currentParentId = roleParentMap?.get(roleId);
-            while (currentParentId != null) {
-                ancestors.add(currentParentId);
-                currentParentId = roleParentMap?.get(currentParentId);
-            }
-            roleToAncestors.put(roleId, ancestors);
-        }
-        return roleToAncestors;
-    }
-    
     public void finalDeletePortfolios(list<CustomerPortfolio__c> cpToDelete){
         Database.DeleteResult[] deletedPortfoliosResults = Database.delete(cpToDelete, false);
         for (Integer i = 0; i < deletedPortfoliosResults.size(); i++) {
@@ -108,8 +107,7 @@ public class PortfolioAncestorsDeletHierarchyBatch implements Database.Batchable
     } 
     
     public void finish(Database.BatchableContext bc) {
-        Database.executeBatch(new PortfolioAccessShareBatch(), 200);
+        Database.executeBatch(new CustomerPortfolioThirdBatch(), 200);
     }
-    
     
 }

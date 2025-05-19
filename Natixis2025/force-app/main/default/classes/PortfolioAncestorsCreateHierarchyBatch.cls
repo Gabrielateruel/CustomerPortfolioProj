@@ -1,4 +1,4 @@
-public without sharing class CustomerPortfolioBatch implements  Database.Batchable <SObject> , Database.Stateful, Database.AllowsCallouts {
+public without sharing class PortfolioAncestorsCreateHierarchyBatch implements  Database.Batchable <SObject> , Database.Stateful, Database.AllowsCallouts {
     private Map <Id, UserRole>          allRoles                            = new Map <Id, UserRole> ();
     private map <Id,set<Id>>            roleToAncestors                     = new  map <Id,set<Id>> ();
     
@@ -105,7 +105,7 @@ public without sharing class CustomerPortfolioBatch implements  Database.Batchab
     }
     
     public void finish(Database.BatchableContext bc) {
-        Database.executeBatch(new CustomerPortfolioSecondaryBatch(), 200);
+        Database.executeBatch(new PortfolioAncestorsDeletHierarchyBatch(), 200);
     }
     
 }

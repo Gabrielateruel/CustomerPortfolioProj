@@ -75,7 +75,6 @@ public without sharing class PortfolioAncestorsCreateHierarchyBatch implements  
     //execute logic to create portfolios
     public void setPortofoliosToCreate(list <CustomerPortofolioWrapper> listWrapper,Map<Id,List<User>> userRoleToUsersMap) {
         list<CustomerPortfolio__c> custPortToCreate       = new list<CustomerPortfolio__c>();
-        system.debug('listWrapper '+ listWrapper);
         for(CustomerPortofolioWrapper iCutPortToCopy : listWrapper){
             if(userRoleToUsersMap.containsKey(iCutPortToCopy.roleId)){
                 for(User iUser : userRoleToUsersMap.get(iCutPortToCopy.roleId)){
